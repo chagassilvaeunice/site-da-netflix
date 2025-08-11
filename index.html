@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Streaming</title>
+    <style>
+      /* === ESTILOS EXISTENTES (MANTIDOS) === */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Arial", sans-serif;
+      }
+
+      body {
+        background-image: url("strangers-Photoroom.jpg");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        color: white;
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: -1;
+      }
+
+      header {
+        background-color: rgba(0, 0, 0, 0.8);
+        color: #fff;
+        padding: 15px 30px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        backdrop-filter: blur(5px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+      }
+
+      .logo {
+        width: 150px;
+        height: auto;
+        margin-right: 30px;
+      }
+
+      nav ul {
+        display: flex;
+        list-style: none;
+      }
+
+      nav ul li {
+        margin-right: 20px;
+        position: relative;
+      }
+
+      nav ul li a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: color 0.3s;
+      }
+
+      nav ul li a:hover {
+        color: #e50914;
+      }
+
+      nav ul li.active a {
+        color: #e50914;
+        font-weight: bold;
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .icon {
+        width: 24px;
+        height: 24px;
+        filter: brightness(0) invert(1);
+        cursor: pointer;
+        transition: transform 0.3s;
+      }
+
+      .icon:hover {
+        transform: scale(1.1);
+      }
+
+      .user-menu {
+        width: 32px;
+        height: 32px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      main {
+        padding-top: 80px;
+        min-height: calc(100vh - 80px);
+        padding: 100px 30px 30px;
+      }
+
+      /* === NOVOS ESTILOS (ADICIONADOS PARA STRANGER THINGS) === */
+      .destaque-container {
+        max-width: 600px;
+        margin-top: 50px;
+      }
+
+      .tag-serie {
+        color: #e50914;
+        font-weight: bold;
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+
+      .titulo-serie {
+        font-size: 48px;
+        font-weight: 900;
+        margin-bottom: 15px;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+      }
+
+      .info-serie {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        font-size: 16px;
+      }
+
+      .info-serie span:not(:last-child)::after {
+        content: "•";
+        margin-left: 15px;
+        color: #aaa;
+      }
+
+      .descricao-serie {
+        font-size: 18px;
+        line-height: 1.5;
+        margin-bottom: 20px;
+      }
+
+      .elenco-serie,
+      .criacao-serie {
+        font-size: 14px;
+        color: #aaa;
+        margin-bottom: 5px;
+      }
+
+      .botoes-acao {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+      }
+
+      .btn {
+        padding: 10px 25px;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+        border: none;
+      }
+
+      .btn-assistir {
+        background-color: #e50914;
+        color: white;
+      }
+
+      .btn-assistir:hover {
+        background-color: #f40612;
+        transform: scale(1.05);
+      }
+
+      .btn-lista {
+        background-color: rgba(109, 109, 110, 0.7);
+        color: white;
+      }
+
+      .btn-lista:hover {
+        background-color: rgba(109, 109, 110, 0.9);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Cabeçalho (mantido igual) -->
+    <header>
+      <div class="header-left">
+        <img src="pngwing.com.png" alt="Logomarca" class="logo" />
+        <nav>
+          <ul>
+            <li class="active"><a href="#">Início</a></li>
+            <li><a href="#">Séries</a></li>
+            <li><a href="#">Filmes</a></li>
+            <li><a href="#">Bombando</a></li>
+            <li><a href="#">Minha Lista</a></li>
+            <li><a href="#">Navegar por Idiomas</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="header-right">
+        <img src="lupa.png" alt="Pesquisa Infantil" class="icon" />
+        <img src="notifi.png" alt="Notificações" class="icon" />
+        <img src="rato.png" alt="Menu do Usuário" class="user-menu" />
+      </div>
+    </header>
+
+    <!-- Conteúdo principal (com a nova seção) -->
+    <main>
+      <div class="destaque-container">
+        <div class="tag-serie">N SÉRIE</div>
+        <h1 class="titulo-serie">STRANGER THINGS</h1>
+
+        <div class="info-serie">
+          <span>2016</span>
+          <span>A16</span>
+          <span>4 temporadas</span>
+          <span>Ficção científica</span>
+        </div>
+
+        <p class="descricao-serie">
+          Quando um garoto desaparece, a cidade toda participa nas buscas. Mas o
+          que encontram são segredos, forças sobrenaturais e uma menina.
+        </p>
+
+        <div class="elenco-serie">
+          Estrelando: Winona Ryder, David Harbour, Millie Bobby Brown
+        </div>
+        <div class="criacao-serie">Criação: The Duffer Brothers</div>
+
+        <div class="botoes-acao">
+          <button class="btn btn-assistir">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M8 5V19L19 12L8 5Z" fill="white" />
+            </svg>
+            Assistir
+          </button>
+          <button class="btn btn-lista">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 4V20M20 12H4" stroke="white" stroke-width="2" />
+            </svg>
+            Minha Lista
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // Script original mantido
+      document.querySelectorAll("nav ul li").forEach((item) => {
+        item.addEventListener("click", function () {
+          document.querySelectorAll("nav ul li").forEach((i) => {
+            i.classList.remove("active");
+          });
+          this.classList.add("active");
+        });
+      });
+    </script>
+  </body>
+</html>
+
+<div class="netflix-top8-carousel">
+  <h2 class="carousel-header">Top 8 em filmes hoje</h2>
+
+  <div class="carousel-wrapper">
+    <!-- Item 1 -->
+    <div class="carousel-slide">
+      <div class="slide-number">1</div>
+      <div class="slide-content">
+        <div class="netflix-n">N</div>
+        <img
+          src="https://image.tmdb.org/t/p/w500/9Z2qT9iZYLzzsCSJeJX3XqxM7u.jpg"
+          alt="NEVER"
+          class="movie-poster"
+        />
+        <div class="movie-details">
+          <h3 class="movie-title">NEVER</h3>
+          <div class="movie-tags">
+            <span>ME ON</span>
+            <span>NO ON</span>
+            <span>NOVELO</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item 2 -->
+    <div class="carousel-slide">
+      <div class="slide-number">2</div>
+      <div class="slide-content">
+        <div class="netflix-n">N</div>
+        <img
+          src="https://image.tmdb.org/t/p/w500/zJNEXWx3YyWGQioCbutFd5dcNYS.jpg"
+          alt="SLAJIFTOR"
+          class="movie-poster"
+        />
+        <div class="movie-details">
+          <h3 class="movie-title">SLAJIFTOR</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- Itens 3 a 8 -->
+    <div class="carousel-slide">
+      <div class="slide-number">3</div>
+      <div class="slide-content">
+        <div class="netflix-n">N</div>
+        <img
+          src="https://image.tmdb.org/t/p/w500/9Gtg2DzBhmYamXBS1hKAhiwbBKS.jpg"
+          alt="PREFERED"
+          class="movie-poster"
+        />
+        <div class="movie-details">
+          <h3 class="movie-title">PREFERED</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="carousel-slide">
+      <div class="slide-number">4</div>
+      <div class="slide-content">
+        <div class="netflix-n">N</div>
+        <img
+          src="https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg"
+          alt="CECONIUS"
+          class="movie-poster"
+        />
+        <div class="movie-details">
+          <h3 class="movie-title">CECONIUS</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="carousel-slide">
+      <div class="slide-number">5</div>
+      <div class="slide-content">
+        <div class="netflix-n">N</div>
+        <img
+          src="https://image.tmdb.org/t/p/w500/7RyHsO4yDXtBv1zUU3mTpHeQ0d5.jpg"
+          alt="GLEENBERG DOLKPOP"
+          class="movie-poster"
+        />
+        <div class="movie-details">
+          <h3 class="movie-title">GLEENBERG DOLKPOP</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="carousel-slide">
+      <div class="slide-number">6</div>
+      <div class="slide-content">
+        <div class="netflix-n">N</div>
+        <img
+          src="https://image.tmdb.org/t/p/w500/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg"
+          alt="MEGAMENTE"
+          class="movie-poster"
+        />
+        <div class="movie-details">
+          <h3 class="movie-title">MEGAMENTE</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="carousel-slide">
+      <div class="slide-number">7</div>
+      <div class="slide-content">
+        <div class="netflix-n">N</div>
+        <img
+          src="https://image.tmdb.org/t/p/w500/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg"
+          alt="FILME 7"
+          class="movie-poster"
+        />
+        <div class="movie-details">
+          <h3 class="movie-title">FILME 7</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="carousel-slide">
+      <div class="slide-number">8</div>
+      <div class="slide-content">
+        <div class="netflix-n">N</div>
+        <img
+          src="https://image.tmdb.org/t/p/w500/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg"
+          alt="FILME 8"
+          class="movie-poster"
+        />
+        <div class="movie-details">
+          <h3 class="movie-title">FILME 8</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .netflix-top8-carousel {
+    width: 100%;
+    padding: 20px 40px;
+    background: #141414;
+    color: white;
+    font-family: "Netflix Sans", Arial, sans-serif;
+    box-sizing: border-box;
+    position: relative;
+  }
+
+  .carousel-header {
+    font-size: 1.8vw;
+    font-weight: 500;
+    margin-bottom: 1.5vw;
+    padding-left: 0.5vw;
+  }
+
+  .carousel-wrapper {
+    display: flex;
+    overflow-x: auto;
+    gap: 1vw;
+    padding-bottom: 1vw;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .carousel-wrapper::-webkit-scrollbar {
+    height: 0.6vw;
+  }
+
+  .carousel-wrapper::-webkit-scrollbar-track {
+    background: #333;
+    border-radius: 0.3vw;
+  }
+
+  .carousel-wrapper::-webkit-scrollbar-thumb {
+    background: #e50914;
+    border-radius: 0.3vw;
+  }
+
+  .carousel-slide {
+    flex: 0 0 24%;
+    height: 14vw;
+    position: relative;
+    transition: transform 0.3s ease;
+  }
+
+  .carousel-slide:hover {
+    transform: scale(1.05);
+    z-index: 2;
+  }
+
+  .slide-number {
+    position: absolute;
+    left: -1.2vw;
+    top: -1.2vw;
+    width: 3.5vw;
+    height: 3.5vw;
+    background: linear-gradient(180deg, #e50914, #b00710);
+    border-radius: 0.4vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8vw;
+    font-weight: 700;
+    z-index: 3;
+    box-shadow: 0 0 1vw rgba(0, 0, 0, 0.5);
+  }
+
+  .slide-content {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    border-radius: 0.4vw;
+    overflow: hidden;
+  }
+
+  .netflix-n {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.7);
+    color: #e50914;
+    font-weight: 900;
+    font-size: 1.2vw;
+    padding: 0.5vw 1vw;
+    border-bottom-right-radius: 0.4vw;
+    z-index: 2;
+  }
+
+  .movie-poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .movie-details {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1vw;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+    z-index: 2;
+  }
+
+  .movie-title {
+    font-size: 1.3vw;
+    font-weight: 600;
+    margin: 0 0 0.5vw 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .movie-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3vw;
+  }
+
+  .movie-tags span {
+    font-size: 0.8vw;
+    color: #d2d2d2;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.2vw 0.6vw;
+    border-radius: 0.2vw;
+  }
+
+  /* Botões de navegação */
+  .carousel-nav {
+    position: absolute;
+    right: 4vw;
+    top: 2vw;
+    display: flex;
+    gap: 0.5vw;
+  }
+
+  .carousel-nav button {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 2.5vw;
+    height: 2.5vw;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2vw;
+  }
+
+  .carousel-nav button:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  /* Responsividade */
+  @media (max-width: 768px) {
+    .netflix-top8-carousel {
+      padding: 15px 20px;
+    }
+
+    .carousel-header {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+
+    .carousel-slide {
+      flex: 0 0 45%;
+      height: 25vw;
+    }
+
+    .slide-number {
+      width: 30px;
+      height: 30px;
+      font-size: 16px;
+      left: -10px;
+      top: -10px;
+    }
+
+    .netflix-n {
+      font-size: 14px;
+      padding: 5px 8px;
+    }
+
+    .movie-title {
+      font-size: 14px;
+    }
+
+    .movie-tags span {
+      font-size: 10px;
+      padding: 2px 5px;
+    }
+
+    .carousel-nav {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const carousel = document.querySelector(".carousel-wrapper");
+    const slides = document.querySelectorAll(".carousel-slide");
+
+    // Navegação por clique
+    slides.forEach((slide) => {
+      slide.addEventListener("click", function () {
+        const title = this.querySelector(".movie-title").textContent;
+        console.log("Filme selecionado:", title);
+        // window.location.href = '/watch/' + encodeURIComponent(title);
+      });
+    });
+
+    // Scroll automático
+    let autoScroll = setInterval(() => {
+      carousel.scrollBy({
+        left: carousel.offsetWidth * 0.25,
+        behavior: "smooth",
+      });
+
+      // Reinicia quando chega ao final
+      if (
+        carousel.scrollLeft + carousel.offsetWidth >=
+        carousel.scrollWidth - 100
+      ) {
+        setTimeout(() => {
+          carousel.scrollTo({
+            left: 0,
+            behavior: "smooth",
+          });
+        }, 1000);
+      }
+    }, 4000);
+
+    // Pausa no hover
+    carousel.addEventListener("mouseenter", () => clearInterval(autoScroll));
+    carousel.addEventListener("mouseleave", () => {
+      autoScroll = setInterval(() => {
+        carousel.scrollBy({
+          left: carousel.offsetWidth * 0.25,
+          behavior: "smooth",
+        });
+      }, 4000);
+    });
+  });
+</script>
